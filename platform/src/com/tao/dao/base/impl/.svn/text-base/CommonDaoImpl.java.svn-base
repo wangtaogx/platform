@@ -1,0 +1,92 @@
+package com.xhcard.dao.base.impl;
+
+import java.util.List;
+
+import com.ibatis.sqlmap.client.SqlMapClient;
+import com.xhcard.dao.base.BaseDao;
+import com.xhcard.util.Constant;
+import com.xhcard.util.Pagination;
+
+/**
+ * 
+ *
+ */
+public abstract class CommonDaoImpl<T> implements BaseDao<T> {
+	
+	private SqlMapClient client;
+
+	public SqlMapClient getClient() {
+		return client;
+	}
+
+	public void setClient(SqlMapClient client) {
+		this.client = client;
+	}
+	
+	public List<T> getAllListByObj(String tag,T obj)throws Exception{
+		try{
+			List<T> list = client.queryForList(tag, obj);
+			return list;
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	public List<T> getAllList(String tag)throws Exception{
+		try{
+			List<T> list = client.queryForList(tag);
+			return list;
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	public List<T> getPaginationList(String tag,T obj,Pagination<T> pg)throws Exception{
+		try{
+			List<T> list = null;
+			if(pg != null){
+				int startIndex = pg.getStart();
+				//int endIndex = pg.getStart()+pg.getPageSize();
+				Object countAll = null;
+				if(obj==null){
+					list = client.queryForList(tag, startIndex, pg.getPageSize());
+					countAll = client.queryForObject(tag+Constant.COUNT_ALL);
+				}else{
+					list = client.queryForList(tag, obj, startIndex, pg.getPageSize());
+					countAll = client.queryForObject(tag+Constant.COUNT_ALL, obj);
+				}
+				if(countAll != null){
+					int total = Integer.parseInt(countAll.toString());
+					pg.setTotal(total);//总条数
+					int quotient = total%pg.getPageSize();//剩余10条
+					int pt = total/pg.getPageSize();//页数
+					if(quotient!=0){
+						pt++;
+					}
+					pg.setPageTotal(pt);
+				}
+			}
+			return list;
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	public List<T> getAllList(String tag,T obj,Integer start,Integer end)throws Exception{
+		try{
+			List<T> list = null;
+			if(obj==null){
+				list = getClient().queryForList(tag, start, end);
+			}else{
+				list = getClient().queryForList(tag, obj, start, end);
+			}
+			return list;
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+	}
+}

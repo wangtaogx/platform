@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap     
+
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"     
+
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SystemParameterDao">
+
+<typeAlias alias="SystemParameter" type="com.tao.model.SystemParameter"/> 
+<resultMap id="UserResult" class="Users">
+    <result property="id" column="C_ID"/>
+    <result property="username" column="C_USERNAME"/>
+    <result property="password" column="C_PASSWORD"/>
+</resultMap>
+ <parameterMap id="UserParameter" class="Users">
+	<parameter property="id" javaType="long" jdbcType="number(10)"/>
+	<parameter property="username" jdbcType="VARCHAR"/>
+	<parameter property="password" jdbcType="VARCHAR"/>
+</parameterMap>
+ <!-- Select with no parameters using the result map for Account class. -->
+
+ <select id="selectAllUsers" resultMap="UserResult">
+
+    select * from t_user
+
+ </select>
+
+ 
+
+ <select id="selectUser" resultClass="Users" parameterClass="long">
+
+  select * from t_user where c_id=#id#
+
+ </select>
+
+ 
+
+ <insert id="insertUser" parameterClass="Users">
+ <selectKey resultClass="long" keyProperty="id" type="pre">   
+       <![CDATA[SELECT SEQ_USER.NEXTVAL AS ID FROM DUAL]]>   
+ </selectKey>   
+  insert into t_user(c_id,c_username,c_password) values (#id#,#username#,#password#)
+ </insert>
+
+ 
+
+ <update id="updateUser" parameterClass="Users">
+
+  update t_user set c_username = #username#,c_password=#password#
+
+  where c_id=#id#
+
+  </update>
+
+ 
+
+ <delete id="deleteUser" parameterClass="int">
+
+  delete from t_user where id=#id#
+
+ </delete>
+
+</sqlMap>

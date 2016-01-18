@@ -1,0 +1,203 @@
+package com.xhcard.dao.base.impl;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.ibatis.sqlmap.client.SqlMapClient;
+import com.xhcard.dao.base.BaseDao;
+import com.xhcard.pojo.Ids;
+
+/**
+ * 
+ *
+ */
+public class BaseDaoImpl<T> extends CommonDaoImpl<T> implements BaseDao<T> { 
+	
+	public void delete(String tag, T obj) throws Exception {
+		try{
+			getClient().delete(tag, obj);
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+	}
+
+	public T get(String tag,T obj)throws Exception {
+		try{
+			Object ojb = getClient().queryForObject(tag, obj);
+			return (T)ojb;
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	public Object get(String tag,Serializable sil)throws Exception{
+		try{
+			Object ojb = getClient().queryForObject(tag, sil);
+			return ojb;
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+	}
+
+	public void insert(String tag, T obj) throws Exception {
+		try{
+			getClient().insert(tag, obj);
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+	}
+
+	public void update(String tag, T obj) throws Exception {
+		try{
+			getClient().update(tag, obj);
+		}catch(Exception e){
+			throw e;
+		}
+	}
+	
+	public void insertExecuteBatch(String tag,List<T> list)throws Exception{
+		try{
+			getClient().startTransaction();
+			getClient().startBatch();
+			for(Object obj: list){
+				getClient().insert(tag, obj);
+			}
+			getClient().executeBatch();
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}finally{
+			getClient().endTransaction();
+		}
+	}
+	
+	public void deleteExecuteBatch(String tag,List<T> list)throws Exception{
+		try{
+			getClient().startTransaction();
+			getClient().startBatch();
+			for(Object obj: list){
+				getClient().delete(tag, obj);
+			}
+			getClient().executeBatch();
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}finally{
+			getClient().endTransaction();
+		}
+	}
+	public Integer getMaxIdsByTableName(Integer incremental,String tableName)throws Exception{
+		Map parameterMap = new HashMap();
+		parameterMap.put("tableName", tableName);
+		parameterMap.put("incremental", incremental);
+		parameterMap.put("returnids", "-1");
+		SqlMapClient smc = null;
+		try{
+			smc = getClient();		
+			smc.queryForObject("getProcGetMaxIds", parameterMap);
+			Integer ids = Integer.valueOf(parameterMap.get("returnids").toString());
+			return ids;
+		}catch(Exception e){
+			throw e;
+		}
+	}
+	
+	public String getBillNoByHead(String head)throws Exception{
+		Map<String,String> parameterMap = new HashMap<String,String>();
+		parameterMap.put("head", head);
+		parameterMap.put("billNo", null);
+		SqlMapClient smc = null;
+		try{
+			smc = getClient();		
+			smc.queryForObject("getProcGetBillNo", parameterMap);
+			return parameterMap.get("billNo").toString();
+		}catch(Exception e){
+			throw e;
+		}
+	}
+	//获取含日期的流水号
+	public String getDateBillNoByHead(String head,String showHead,int len)throws Exception{
+		Map parameterMap = new HashMap();
+		parameterMap.put("head", head);
+		parameterMap.put("showHead", showHead);
+		parameterMap.put("len", len);
+		parameterMap.put("billNo", null);
+		SqlMapClient smc = null;
+		try{
+			smc = getClient();		
+			smc.queryForObject("getProcGetDateBillNo", parameterMap);
+			return parameterMap.get("billNo").toString();
+		}catch(Exception e){
+			throw e;
+		}
+	}
+	//获取不含日期流水号
+	public String getSerialBillNoByHead(String head,String showHead,int len)throws Exception{
+		Map parameterMap = new HashMap();
+		parameterMap.put("head", head);
+		parameterMap.put("showHead", showHead);
+		parameterMap.put("len", len);
+		parameterMap.put("billNo", null);
+		SqlMapClient smc = null;
+		try{
+			smc = getClient();		
+			smc.queryForObject("getProcGetSerialBillNo", parameterMap);
+			return parameterMap.get("billNo").toString();
+		}catch(Exception e){
+			throw e;
+		}
+	}
+	//获取库存余额
+	public Long getStockByWarehouseId(String id) throws Exception{
+		Map parameterMap = new HashMap();
+		parameterMap.put("warehouseId", id);
+		parameterMap.put("amount", null);
+		SqlMapClient smc = null;
+		try{
+			smc = getClient();		
+			smc.queryForObject("getProcGetStock", parameterMap);
+			return Long.valueOf(parameterMap.get("amount") == null ? "0" : parameterMap.get("amount").toString());
+		}catch(Exception e){
+			throw e;
+		}
+	}
+	//获取最大库存金额
+	public Long getMaxStockByWarehouseId(String id) throws Exception{
+		Map parameterMap = new HashMap();
+		parameterMap.put("warehouseId", id);
+		parameterMap.put("amount", null);
+		SqlMapClient smc = null;
+		try{
+			smc = getClient();		
+			smc.queryForObject("getProcGetMaxStock", parameterMap);
+			return Long.valueOf(parameterMap.get("amount") == null ? "0" : parameterMap.get("amount").toString());
+		}catch(Exception e){
+			throw e;
+		}
+	}
+	//获取库存卡片余额
+	public Integer getStockCardByWarehouseId(String id,String typeId) throws Exception{
+		Map parameterMap = new HashMap();
+		parameterMap.put("warehouseId", id);
+		parameterMap.put("typeId", typeId);
+		parameterMap.put("num", null);
+		SqlMapClient smc = null;
+		try{
+			smc = getClient();		
+			smc.queryForObject("getProcGetStockCard", parameterMap);
+			return Integer.valueOf(parameterMap.get("num") == null ? "0" : parameterMap.get("num").toString());
+		}catch(Exception e){
+			throw e;
+		}
+	}
+	//获取库存卡号段
+	
+	
+	
+}
