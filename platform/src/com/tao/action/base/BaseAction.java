@@ -31,12 +31,9 @@ public class BaseAction extends ApplicationObjectSupport{
 		return sc;
   	}
  	 
-	protected boolean createResult(ResultObject resultObject,JSONObject result){
-		boolean isDo = false;
+	protected void createResult(ResultObject resultObject,JSONObject result){
 		if(!resultObject.isSuccess()){
 			result.put("status", resultObject.getFailReason());
-			isDo = true;
 		}
-		return isDo;
 	}
 }

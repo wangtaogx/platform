@@ -1,14 +1,16 @@
 package com.tao.model;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SessionInfo {
+public class SessionInfo implements Serializable{
 
 	public static final String KEY_USER_INFO = "KEY_USER_INFO";
 	private String code;
 	private String uniqueID;
 	private String type;
+	private String token;
 	private long userID;
 	private Map<String,Object> parampeters = new HashMap<String,Object>();
 	
@@ -35,6 +37,12 @@ public class SessionInfo {
 	}
 	public void setUserID(long userID) {
 		this.userID = userID;
+	}
+	public String getToken() {
+		return token;
+	}
+	public void setToken(String token) {
+		this.token = token;
 	}
 	public Object getParameter(String key){
 		return parampeters.get(key);
